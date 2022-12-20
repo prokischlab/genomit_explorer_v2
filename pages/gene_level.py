@@ -1,51 +1,43 @@
 import dash
 from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
-from scipy.stats import fisher_exact
 import json
 
-dash.register_page(__name__, path='/')
+dash.register_page(__name__, path='/gene_level', order=1)
 
-df_all = pd.read_csv('data/precalc_data/data_all.csv')
-df_all.loc[df_all.gene_name == '.', 'gene_name'] = 'Unsolved'
-
+df_gene_level = pd.read_csv('data/precalc_data/gene_level.csv')
 with open('data/precalc_data/meta_data.json') as f:
     meta_data = json.load(f)
 gene_names = meta_data['gene_names']
 gene_names.remove('Unsolved')
 hpo_terms = meta_data['hpo_terms']
 
-gene_patient_num = \
-    df_all.groupby(['gene_name', 'exome_ID']).count().reset_index().groupby(['gene_name']).count().exome_ID
-hpo_patient_num = \
-    df_all.groupby(['HPO_ID', 'exome_ID']).count().reset_index().groupby(['HPO_ID']).count().exome_ID
-
-
-df_filter = df_all[['gene_name', 'HPO_ID', 'HPO_term', 'exome_ID']].copy()
-df_filter = df_filter.groupby(['gene_name', 'HPO_ID', 'exome_ID']).agg({'HPO_term': 'first'}).reset_index()\
-    .groupby(['gene_name', 'HPO_ID']).agg({'HPO_term': 'first', 'exome_ID': 'count'}).reset_index()
-
-
 def perc_str(a, b):
     perc = a / b
     perc = round(perc * 100)
     return f'{a}/{b} ({perc}%)'
 
+def prepare_df_visualise(df: pd.DataFrame):
+    df_res = df.copy()
 
-total_patient_num = len(df_all.exome_ID.unique())
+    df_res['patients_gene'] = df_res.apply(lambda row: perc_str(row.gene_hpo, row.gene_total), axis=1)
+    df_res['patients_total'] = df_res.apply(lambda row: perc_str(row.all_patients_hpo, row.all_patients), axis=1)
 
-df_filter['this_gene_hpo'] = \
-    df_filter.apply(lambda row: perc_str(row.exome_ID, gene_patient_num[row.gene_name]), axis=1)
-df_filter['all_patients_hpo'] = \
-    df_filter.apply(lambda row: perc_str(hpo_patient_num[row.HPO_ID], total_patient_num), axis=1)
+    df_res = df_res.reset_index(drop=True)
+    df_res = df_res.reset_index()
+    df_res['index'] += 1
 
-# df_filter['fisher_res'] = \
-#     df_filter.apply(lambda row: fisher_exact([[row.exome_ID, gene_patient_num[row.gene_name] - row.exome_ID],
-#                                               [hpo_patient_num[row.HPO_ID], total_patient_num -
-#                                                hpo_patient_num[row.HPO_ID]]]), axis=1)
-# df_filter['fisher_res'] = df_filter['fisher_res'].apply(lambda row: ','.join([str(row[0]), str(row[1])]))
+    df_res = \
+        df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene', 'patients_total', 'odds_ratio', 'p_val']]
+    df_res = df_res.sort_values('p_val')
 
-df_filter = df_filter[['gene_name', 'HPO_ID', 'HPO_term', 'this_gene_hpo', 'all_patients_hpo']]
+    df_res['odds_ratio'] = df_res['odds_ratio'].apply(lambda row: '{:.2f}'.format(row))
+    df_res['p_val'] = df_res['p_val'].apply(lambda row: '{:.2E}'.format(row))
+
+    df_res.columns = \
+        ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term',
+         'All other patients with this HPO', 'Odds ratio', 'P value']
+    return df_res
 
 layout = html.Div(children=[
     html.H1(children='Gene-level HPO associations'),
@@ -62,7 +54,7 @@ layout = html.Div(children=[
         ], style={"width": "60%", 'display': 'inline-block', "margin-left": "15px"}),
     ]),
     html.Br(),
-    dash_table.DataTable(df_filter.to_dict('records'), id='gene-table', page_size=10),
+    dash_table.DataTable(prepare_df_visualise(df_gene_level).to_dict('records'), id='gene-table', page_size=10),
     html.H3(children='Combine HPOs:'),
     html.Br(),
 ])
@@ -74,7 +66,7 @@ layout = html.Div(children=[
     Input('hpo-dropdown', 'value'),
 )
 def filter_table(gene_name, hpos):
-    df_res = df_filter.copy()
+    df_res = df_gene_level.copy()
 
     if gene_name is not None:
         df_res = df_res[df_res.gene_name == gene_name]
@@ -83,4 +75,4 @@ def filter_table(gene_name, hpos):
         hpo_ids = [hpo_terms[h][0] for h in hpos]
         df_res = df_res[df_res.HPO_ID.isin(hpo_ids)]
 
-    return df_res.to_dict('records')
+    return prepare_df_visualise(df_res).to_dict('records')

@@ -3,7 +3,7 @@ from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
 import json
 
-dash.register_page(__name__, path='/patient_level')
+dash.register_page(__name__, path='/patient_level', order=2)
 
 
 def prepare_df_visualise(df: pd.DataFrame):
