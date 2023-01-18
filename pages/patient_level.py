@@ -41,7 +41,15 @@ layout = html.Div(children=[
         ], style={"width": "50%", 'display': 'inline-block', "margin-left": "15px"}),
     ]),
     html.Br(),
-    dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='patient-table', page_size=20),
+    dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='patient-table',
+                         # page_size=20,
+                         page_action='none',
+                         virtualization=True,
+                         fixed_rows={'headers': True},
+                         style_cell={'minWidth': 90, 'maxWidth': 300},
+                         style_table={'height': 500},
+                         sort_action="native", sort_mode="multi",
+                         ),
 ])
 
 

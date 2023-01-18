@@ -77,27 +77,25 @@ def precalc(data_dir, file_name):
 
         df_gene_level['gene_hpo'] = df_gene_level.exome_ID
         df_gene_level['gene_total'] = df_gene_level.apply(lambda row: gene_patient_num[row.gene_name], axis=1)
-
         df_gene_level['all_patients_hpo'] = df_gene_level.apply(lambda row: hpo_patient_num[row.HPO_ID], axis=1)
         df_gene_level['all_patients'] = total_patient_num
-
         df_gene_level['all_patients_hpo'] = df_gene_level['all_patients_hpo'] - df_gene_level['gene_hpo']
         df_gene_level['all_patients'] = df_gene_level['all_patients'] - df_gene_level['gene_total']
-
         df_gene_level = df_gene_level[df_gene_level.gene_name != 'Unsolved']
-
         df_gene_level['fisher_res'] = \
             df_gene_level.apply(lambda row: fisher_exact([[row.gene_hpo, row.gene_total - row.gene_hpo],
                                                           [row.all_patients_hpo,
                                                            row.all_patients - row.all_patients_hpo]]), axis=1)
-        # df_gene_level['odds_ratio'] = df_gene_level['fisher_res'].apply(lambda row: '{:.2f}'.format(row[0]))
-        # df_gene_level['p_val'] = df_gene_level['fisher_res'].apply(lambda row: '{:.2f}'.format(row[1]))
-
         df_gene_level['odds_ratio'] = df_gene_level['fisher_res'].apply(lambda row: row[0])
         df_gene_level['p_val'] = df_gene_level['fisher_res'].apply(lambda row: row[1])
-
         df_gene_level = df_gene_level[['gene_name', 'HPO_ID', 'HPO_term', 'gene_hpo', 'gene_total',
                                        'all_patients_hpo', 'all_patients', 'odds_ratio', 'p_val']]
+
+        df_hpo_level = df_all.copy()
+        df_hpo_level = df_hpo_level[['HPO_ID', 'HPO_term', 'gene_name', 'exome_ID']]
+        df_hpo_level = df_hpo_level.groupby(['HPO_ID', 'gene_name', 'exome_ID']) \
+            .agg({'HPO_term': 'first'}).reset_index() \
+            .groupby(['HPO_ID', 'gene_name']).agg({'HPO_term': 'first', 'exome_ID': 'count'}).reset_index()
 
         logging.info('Save data to file')
         df_all.to_csv(data_all_path, index=False)
