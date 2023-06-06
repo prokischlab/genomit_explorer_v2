@@ -13,7 +13,7 @@ df_gene_level = pd.read_csv('data/precalc_data/gene_level.csv')
 with open('data/precalc_data/meta_data.json') as f:
     meta_data = json.load(f)
 gene_names = meta_data['gene_names']
-gene_names.remove('Unsolved')
+# gene_names.remove('Unsolved')
 hpo_terms = meta_data['hpo_terms']
 
 df_all = pd.read_csv('data/precalc_data/data_all.csv')

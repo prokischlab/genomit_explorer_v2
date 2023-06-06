@@ -4,10 +4,13 @@ import pandas as pd
 import json
 import logging
 from scipy.stats import fisher_exact
+from tqdm import tqdm
 
 
 def precalc(data_dir, file_name):
-    df_all = pd.read_csv(os.path.join(data_dir, file_name), sep='\t')
+    # df_all = pd.read_csv(os.path.join(data_dir, file_name), sep='\t')
+    df_all = pd.read_csv(os.path.join(data_dir, file_name), sep=',')
+    df_all = df_all[df_all.mito_gene == True]
     precalc_dir = os.path.join(data_dir, 'precalc_data')
 
     recalc_data_all = False
@@ -75,19 +78,21 @@ def precalc(data_dir, file_name):
 
         total_patient_num = len(df_all.exome_ID.unique())
 
+        tqdm.pandas()
+
         df_gene_level['gene_hpo'] = df_gene_level.exome_ID
-        df_gene_level['gene_total'] = df_gene_level.apply(lambda row: gene_patient_num[row.gene_name], axis=1)
-        df_gene_level['all_patients_hpo'] = df_gene_level.apply(lambda row: hpo_patient_num[row.HPO_ID], axis=1)
+        df_gene_level['gene_total'] = df_gene_level.progress_apply(lambda row: gene_patient_num[row.gene_name], axis=1)
+        df_gene_level['all_patients_hpo'] = df_gene_level.progress_apply(lambda row: hpo_patient_num[row.HPO_ID], axis=1)
         df_gene_level['all_patients'] = total_patient_num
         df_gene_level['all_patients_hpo'] = df_gene_level['all_patients_hpo'] - df_gene_level['gene_hpo']
         df_gene_level['all_patients'] = df_gene_level['all_patients'] - df_gene_level['gene_total']
         df_gene_level = df_gene_level[df_gene_level.gene_name != 'Unsolved']
         df_gene_level['fisher_res'] = \
-            df_gene_level.apply(lambda row: fisher_exact([[row.gene_hpo, row.gene_total - row.gene_hpo],
+            df_gene_level.progress_apply(lambda row: fisher_exact([[row.gene_hpo, row.gene_total - row.gene_hpo],
                                                           [row.all_patients_hpo,
                                                            row.all_patients - row.all_patients_hpo]]), axis=1)
-        df_gene_level['odds_ratio'] = df_gene_level['fisher_res'].apply(lambda row: row[0])
-        df_gene_level['p_val'] = df_gene_level['fisher_res'].apply(lambda row: row[1])
+        df_gene_level['odds_ratio'] = df_gene_level['fisher_res'].progress_apply(lambda row: row[0])
+        df_gene_level['p_val'] = df_gene_level['fisher_res'].progress_apply(lambda row: row[1])
         df_gene_level = df_gene_level[['gene_name', 'HPO_ID', 'HPO_term', 'gene_hpo', 'gene_total',
                                        'all_patients_hpo', 'all_patients', 'odds_ratio', 'p_val']]
 

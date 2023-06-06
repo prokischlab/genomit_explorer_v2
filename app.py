@@ -7,7 +7,8 @@ from utils.precalc import precalc
 
 logging.basicConfig(level=logging.INFO)
 
-precalc('data', 'exomes2000.HPO.txt')
+# precalc('data', 'exomes2000.HPO.txt')
+precalc('data', 'cohorts_hpo_pat_nikita.csv')
 
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -59,4 +60,4 @@ app.layout = html.Div([
 ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
