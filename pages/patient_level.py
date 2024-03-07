@@ -10,11 +10,11 @@ def prepare_df_visualise(df: pd.DataFrame):
     df_res = df.copy()
     df_res = df_res[['exome_ID', 'gene_name', 'HPO_ID', 'HPO_term']]
     # df_res.exome_ID = 'MWES' + df_res.exome_ID.str.c
-    df['exome_ID'] = 'MWES' + df['exome_ID'].astype(str)
-    df_res = df_res.reset_index(drop=True)
-    df_res = df_res.reset_index()
-    df_res['index'] += 1
-    df_res.columns = ['N', 'Patient ID', 'Gene name', 'HPO ID', 'HPO term']
+    # df['exome_ID'] = 'MWES' + df['exome_ID'].astype(str)
+    # df_res = df_res.reset_index(drop=True)
+    # df_res = df_res.reset_index()
+    # df_res['index'] += 1
+    df_res.columns = ['Patient ID', 'Gene name', 'HPO ID', 'HPO term']
     return df_res
 
 

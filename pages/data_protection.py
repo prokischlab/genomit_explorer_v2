@@ -54,21 +54,21 @@ layout = html.Div(children=[
                'After the respective purpose or expiry of these periods, the corresponding data will be blocked or '
                'deleted as a matter of routine and in accordance with statutory regulations.', ),
 
-        html.P(html.B('Cookies')),
-        html.P('Like many other websites, we also use so-called “cookies”. '
-               'Cookies are small text files that are transferred from a website server to your hard drive. '
-               'This automatically provides us with certain data such as IP address, '
-               'browser used, operating system and your connection to the Internet.', ),
-        html.P('Cookies cannot be used to start programs or to transmit viruses to a computer. '
-               'Based on the information contained in cookies, we can make navigation easier for you '
-               'and enable the correct display of our web pages.', ),
-        html.P('Under no circumstances will the data we collect be passed on to third parties or '
-               'linked to personal data without your consent.', ),
-        html.P('Of course, you can also view our website without cookies. '
-               'Internet browsers are regularly set to accept cookies. '
-               'In general, you can deactivate the use of cookies at any time via the settings of your browser. '
-               'Please use the help functions of your Internet browser to find out how you can change these settings. '
-               'Please note that some features of our website may not work if you have disabled the use of cookies.', ),
+        # html.P(html.B('Cookies')),
+        # html.P('Like many other websites, we also use so-called “cookies”. '
+        #        'Cookies are small text files that are transferred from a website server to your hard drive. '
+        #        'This automatically provides us with certain data such as IP address, '
+        #        'browser used, operating system and your connection to the Internet.', ),
+        # html.P('Cookies cannot be used to start programs or to transmit viruses to a computer. '
+        #        'Based on the information contained in cookies, we can make navigation easier for you '
+        #        'and enable the correct display of our web pages.', ),
+        # html.P('Under no circumstances will the data we collect be passed on to third parties or '
+        #        'linked to personal data without your consent.', ),
+        # html.P('Of course, you can also view our website without cookies. '
+        #        'Internet browsers are regularly set to accept cookies. '
+        #        'In general, you can deactivate the use of cookies at any time via the settings of your browser. '
+        #        'Please use the help functions of your Internet browser to find out how you can change these settings. '
+        #        'Please note that some features of our website may not work if you have disabled the use of cookies.', ),
 
         html.P(html.B('Changes to our data protection regulations')),
         html.P('We reserve the right to adapt this data protection declaration so that it always complies '

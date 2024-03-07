@@ -13,16 +13,27 @@ def precalc(data_dir, file_name):
     df_all = df_all[df_all.mito_gene == True]
     precalc_dir = os.path.join(data_dir, 'precalc_data')
 
+    study_id = pd.read_csv(os.path.join(data_dir, 'study_ID.txt'), sep='\t')
+    study_id['exome_ID'] = study_id['exome_ID'].str.strip()
+    study_id['study_ID'] = study_id['study_ID'].str.strip()
+    study_id = study_id.set_index('exome_ID')
+    study_id_dict = study_id.to_dict()['study_ID']
+
+    df_all['exome_ID_temp'] = df_all['exome_ID'].str.strip().map(study_id_dict)
+    df_all.loc[df_all['exome_ID_temp'].notna(), 'exome_ID'] = df_all['exome_ID_temp']
+
     recalc_data_all = False
 
     data_all_path = os.path.join(precalc_dir, 'data_all.csv')
     meta_data_path = os.path.join(precalc_dir, 'meta_data.json')
     gene_level_path = os.path.join(precalc_dir, 'gene_level.csv')
+    hpo_level_path = os.path.join(precalc_dir, 'hpo_level.csv')
 
     if os.path.isdir(precalc_dir):
         if not os.path.exists(data_all_path) or \
                 not os.path.exists(meta_data_path) or \
-                not os.path.exists(gene_level_path):
+                not os.path.exists(gene_level_path) or \
+                not os.path.exists(hpo_level_path):
             shutil.rmtree(precalc_dir)
             recalc_data_all = True
         else:
@@ -105,5 +116,6 @@ def precalc(data_dir, file_name):
         logging.info('Save data to file')
         df_all.to_csv(data_all_path, index=False)
         df_gene_level.to_csv(gene_level_path, index=False)
+        df_hpo_level.to_csv(hpo_level_path, index=False)
         with open(meta_data_path, 'w') as f:
             json.dump(meta_data, f)

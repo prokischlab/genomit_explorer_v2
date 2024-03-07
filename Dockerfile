@@ -1,5 +1,6 @@
-FROM tiangolo/python3.9
+FROM python:3.9-slim-buster
 
+ENV DASH_DEBUG_MODE False
 COPY . /app
 ENV APP_HOME /app
 
@@ -11,5 +12,6 @@ RUN pip install -r requirements.txt
 
 EXPOSE $PORT
 
-CMD waitress-serve --port=1040 --call hello:create_app
+#CMD gunicorn --bind 0.0.0.0:$PORT app:server
+CMD waitress-serve --port=$PORT app:server
 #CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker --preload --timeout 0 --threads 8 app:app

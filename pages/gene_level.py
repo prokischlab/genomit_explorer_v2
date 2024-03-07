@@ -102,7 +102,7 @@ layout = html.Div(children=[
                          page_action='none',
                          virtualization=True,
                          fixed_rows={'headers': True},
-                         style_cell={'minWidth': 0, 'width': 300, 'maxWidth': 300},
+                         style_cell={'minWidth': 0, 'width': 0, 'maxWidth': 300},
                          style_table={'height': 400},
                          sort_action="native", sort_mode="multi", columns=visualise_columns, ),
     html.Br(),
