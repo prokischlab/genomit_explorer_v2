@@ -10,8 +10,8 @@ COPY . ./
 RUN pip install --upgrade pip==23.1.2
 RUN pip install -r requirements.txt
 
-EXPOSE $PORT
+EXPOSE 8080
 
 #CMD gunicorn --bind 0.0.0.0:$PORT app:server
-CMD waitress-serve --port=$PORT app:server
+CMD waitress-serve --port=8080 app:server
 #CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker --preload --timeout 0 --threads 8 app:app
