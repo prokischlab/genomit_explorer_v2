@@ -8,7 +8,9 @@ from utils.precalc import precalc
 logging.basicConfig(level=logging.INFO)
 
 # precalc('data', 'exomes2000.HPO.txt')
-precalc('data', 'cohorts_hpo_pat_nikita.csv')
+# precalc('data', 'cohorts_hpo_pat_nikita.csv')
+precalc('data', 'GENOMITexplorer.patient_ancestor_HPO.txt')
+print('GENOMITexplorer.patient_ancestor_HPO.txt')
 
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 

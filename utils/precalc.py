@@ -8,19 +8,19 @@ from tqdm import tqdm
 
 
 def precalc(data_dir, file_name):
-    # df_all = pd.read_csv(os.path.join(data_dir, file_name), sep='\t')
-    df_all = pd.read_csv(os.path.join(data_dir, file_name), sep=',')
-    df_all = df_all[df_all.mito_gene == True]
+    df_all = pd.read_csv(os.path.join(data_dir, file_name), sep='\t')
+    # df_all = pd.read_csv(os.path.join(data_dir, file_name), sep=',')
+    # df_all = df_all[df_all.mito_gene == True]
     precalc_dir = os.path.join(data_dir, 'precalc_data')
 
     study_id = pd.read_csv(os.path.join(data_dir, 'study_ID.txt'), sep='\t')
     study_id['exome_ID'] = study_id['exome_ID'].str.strip()
     study_id['study_ID'] = study_id['study_ID'].str.strip()
-    study_id = study_id.set_index('exome_ID')
-    study_id_dict = study_id.to_dict()['study_ID']
-
-    df_all['exome_ID_temp'] = df_all['exome_ID'].str.strip().map(study_id_dict)
-    df_all.loc[df_all['exome_ID_temp'].notna(), 'exome_ID'] = df_all['exome_ID_temp']
+    # study_id = study_id.set_index('exome_ID')
+    # study_id_dict = study_id.to_dict()['study_ID']
+    #
+    # df_all['exome_ID_temp'] = df_all['exome_ID'].str.strip().map(study_id_dict)
+    # df_all.loc[df_all['exome_ID_temp'].notna(), 'exome_ID'] = df_all['exome_ID_temp']
 
     recalc_data_all = False
 
@@ -55,7 +55,7 @@ def precalc(data_dir, file_name):
         gene_names.sort()
         gene_names = gene_names.tolist()
 
-        patients_ids = df_all.exome_ID
+        patients_ids = df_all.exome_ID.astype(str)
         patients_ids = patients_ids.unique()
         patients_ids.sort()
         patients_ids = patients_ids.tolist()
