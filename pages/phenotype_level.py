@@ -8,11 +8,13 @@ dash.register_page(__name__, path='/phenotype_level', order=4)
 
 def prepare_df_visualise(df: pd.DataFrame):
     df_res = df.copy()
-    df_res = df_res[['exome_ID', 'gene_name', 'HPO_ID', 'HPO_term']]
+    # df_res = df_res[['exome_ID', 'gene_name', 'HPO_ID', 'HPO_term']]
+    df_res = df_res[['gene_name', 'number_of_patient']]
     df_res = df_res.reset_index(drop=True)
     df_res = df_res.reset_index()
     df_res['index'] += 1
-    df_res.columns = ['N', 'Patient ID', 'Gene name', 'HPO ID', 'HPO term']
+    # df_res.columns = ['N', 'Patient ID', 'Gene name', 'HPO ID', 'HPO term']
+    df_res.columns = ['N', 'Gene name', 'Number of patients']
     return df_res
 
 
@@ -21,6 +23,9 @@ df_g = df_all.groupby('exome_ID').agg(
         gene_name=pd.NamedAgg(column='gene_name', aggfunc='first'),
         HPO_ID=pd.NamedAgg(column='HPO_ID', aggfunc=lambda x: ', '.join(x)),
         HPO_term=pd.NamedAgg(column='HPO_term', aggfunc=lambda x: ', '.join(x))
+    ).reset_index()
+df_g = df_g.groupby('gene_name').agg(
+        number_of_patient=pd.NamedAgg(column='exome_ID', aggfunc='count')
     ).reset_index()
 
 with open('data/precalc_data/meta_data.json') as f:
@@ -77,5 +82,8 @@ def filter_table(patients_ids, gene_names, hpos):
         gene_name=pd.NamedAgg(column='gene_name', aggfunc='first'),
         HPO_ID=pd.NamedAgg(column='HPO_ID', aggfunc=lambda x: ', '.join(x)),
         HPO_term=pd.NamedAgg(column='HPO_term', aggfunc=lambda x: ', '.join(x))
+    ).reset_index()
+    df_res_g = df_res_g.groupby('gene_name').agg(
+        number_of_patient=pd.NamedAgg(column='exome_ID', aggfunc='count')
     ).reset_index()
     return prepare_df_visualise(df_res_g).to_dict('records')
