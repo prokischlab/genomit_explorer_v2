@@ -3,7 +3,7 @@ from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
 import json
 
-dash.register_page(__name__, path='/phenotype_level', order=4)
+# dash.register_page(__name__, path='/phenotype_level', order=4)
 
 
 def prepare_df_visualise(df: pd.DataFrame):

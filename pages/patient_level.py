@@ -3,7 +3,7 @@ from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
 import json
 
-dash.register_page(__name__, path='/patient_level', order=2)
+dash.register_page(__name__, path='/patient_level', order=3)
 
 
 def prepare_df_visualise(df: pd.DataFrame):
@@ -28,6 +28,12 @@ hpo_terms = meta_data['hpo_terms']
 layout = html.Div(children=[
     html.H1(children='Patient-level HPO associations'),
     html.Br(),
+    html.P('This searchable table contains the patient-level HPO terms from our WES study (>2,000, prefix “MWES”) '
+           'in addition to paediatric molecular confirmed patients from the mitoNET and Besta registries '
+           '(>300, prefix “MREG”), paediatric molecular confirmed Leigh syndrome patients from the Beijing Leigh Group '
+           'Project (>200, prefix “BLGP”), and paediatric molecular confirmed patients curated from the literature '
+           '(>1,500, prefix “MLIT”)'),
+    html.Br(),
     html.Div([
         html.Div([
             'Select patients:',
@@ -44,14 +50,18 @@ layout = html.Div(children=[
     ]),
     html.Br(),
     dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='patient-table',
-                         # page_size=20,
-                         page_action='none',
-                         virtualization=True,
-                         fixed_rows={'headers': True},
-                         style_cell={'minWidth': 90, 'maxWidth': 300},
-                         style_table={'height': 500},
-                         sort_action="native", sort_mode="multi",
+                         page_size=20,
+                         # page_action='none',
+                         # virtualization=True,
+                         # fixed_rows={'headers': True},
+                         # style_cell={'minWidth': 90, 'maxWidth': 300},
+                         # style_table={'height': 500},
+                         # sort_action="native", sort_mode="multi",
                          ),
+    html.Br(),
+    html.P([html.B('Interested in patient-level HPO terms for a specific gene?'),
+            ' Enter your gene of interest in the search box. '
+            'All individuals with a defect in this gene will be returned with their HPO terms.']),
 ])
 
 

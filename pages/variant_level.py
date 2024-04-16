@@ -3,7 +3,7 @@ from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
 import json
 
-dash.register_page(__name__, path='/variant_level', order=3)
+dash.register_page(__name__, path='/variant_level', order=1)
 
 
 def prepare_df_visualise(df: pd.DataFrame):
@@ -28,6 +28,10 @@ patients_ids = df_all['Patient ID'].unique()
 layout = html.Div(children=[
     html.H1(children='Variant-level'),
     html.Br(),
+    html.P('This searchable table contains all detected disease-causing variants from our WES study '
+           '(>1,000 patients, prefix “MWES”) and from the Beijing Leigh Group Project '
+           '(>200 patients, prefix “BLGP”)'),
+    html.Br(),
     html.Div([
         html.Div([
             'Select patients:',
@@ -44,6 +48,42 @@ layout = html.Div(children=[
     ]),
     html.Br(),
     dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='variant-table', page_size=20),
+    html.Br(),
+    html.Ul([
+        html.Li([
+            'Allele frequency according to the ',
+            html.A('gnomAD database', href='https://gnomad.broadinstitute.org', target="_blank")
+        ]),
+        html.Li([
+            html.B('RCC'),
+            ': mitochondrial respiratory chain complex defect'
+        ]),
+        html.Li([
+            html.B('OCR'),
+            ': oxygen consumption rate reduced (<71.2% of control)'
+        ]),
+        html.Li([
+            html.B('P/WB'),
+            ': proteomics or Western blot (aberrant protein expression)'
+        ]),
+        html.Li([
+            html.B('RNA'),
+            ': RNA sequencing (aberrant expression, aberrant splicing, and/or monoallelic expression)'
+        ]),
+        html.Li([
+            html.B('MRI'),
+            ': magnetic resonance imaging'
+        ]),
+        html.Li([
+            html.B('SS'),
+            ': symmetric semantic similarity'
+        ]),
+    ]),
+    html.P([
+        html.B("Interested in the HPO terms associated to a specific variant?"),
+        " Use this table to find your variant of interest. Use the Patient IDs to identify the associated HPO terms by "
+        "searching in the 'Patient-level' tab."
+    ])
 ])
 
 

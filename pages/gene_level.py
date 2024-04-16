@@ -7,7 +7,7 @@ import pandas as pd
 import json
 from scipy.stats import fisher_exact
 
-dash.register_page(__name__, path='/gene_level', order=1)
+dash.register_page(__name__, path='/gene_level', order=2)
 
 df_gene_level = pd.read_csv('data/precalc_data/gene_level.csv')
 with open('data/precalc_data/meta_data.json') as f:
@@ -42,10 +42,14 @@ def prepare_df_visualise(df: pd.DataFrame):
     df_res = \
         df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene', 'patients_total', 'odds_ratio', 'p_val']]
     df_res = df_res.sort_values('p_val')
+    df_res = \
+        df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene']]
 
+    # df_res.columns = \
+    #     ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term',
+    #      'All other patients with this HPO', 'Odds ratio', 'P value']
     df_res.columns = \
-        ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term',
-         'All other patients with this HPO', 'Odds ratio', 'P value']
+        ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term']
     return df_res
 
 
@@ -66,7 +70,18 @@ for col in visualise_df.columns:
 layout = html.Div(children=[
     html.H1(children='Gene-level HPO associations'),
     html.Br(),
-    html.H3(children='Filtration:'),
+    html.P('This searchable table contains all gene-level HPO terms from our WES study (>2,000 patients) in addition '
+           'to paediatric molecular confirmed patients from the mitoNET and Besta registries (>300 patients), '
+           'paediatric molecular confirmed Leigh syndrome patients from the Beijing Leigh Group Project '
+           '(>200 patients), and paediatric molecular confirmed patients curated from the literature '
+           '(>1,500 patients).'),
+    html.P('Searching for gene plus a single HPO term or a combination of HPO terms returns a summary of the frequency '
+           'and results of a Fisher exact test below the table. The odds ratio provides a measure of association. '
+           'A higher value indicates stronger association of the HPO term (or combination or terms) with the gene '
+           'defect of interest. The p value provides the significance of the association. '
+           'A lower value indicates the association of the HPO term (or combination of terms) with the gene defect of '
+           'interest to be more significant.'),
+    html.Br(),
     html.Div([
         html.Div([
             'Select gene:',
@@ -98,15 +113,14 @@ layout = html.Div(children=[
     ]),
     html.Br(),
     dash_table.DataTable(visualise_df.to_dict('records'), id='gene-table',
-                         # page_size=10,
-                         page_action='none',
-                         virtualization=True,
-                         fixed_rows={'headers': True},
-                         style_cell={'minWidth': 0, 'width': 0, 'maxWidth': 300},
-                         style_table={'height': 400},
-                         sort_action="native", sort_mode="multi", columns=visualise_columns, ),
-    html.Br(),
-    html.H3(children='Combine HPOs:'),
+                         page_size=20,
+                         # page_action='none',
+                         # virtualization=True,
+                         # fixed_rows={'headers': True},
+                         # style_cell={'minWidth': 0, 'width': 0, 'maxWidth': 300},
+                         # style_table={'height': 400},
+                         # sort_action="native", sort_mode="multi", columns=visualise_columns,
+                         ),
     html.Br(),
     html.Div([
         html.Div([
@@ -142,6 +156,19 @@ layout = html.Div(children=[
             html.Label(children='Select gene and HPOs to show combination statistics'),
         ], style={'display': 'block'}, id='combine-hpo-div-empty'),
     ], style={"width": "50%"}),
+    html.Br(),
+    html.P([
+        html.B('Interested in which HPO terms are associated to a specific gene?'),
+        ' Enter your gene of interest. All associated HPO terms will be displayed along with the frequency across '
+        'patients with this gene defect.'
+    ]),
+    html.P([
+        html.B('Interested in a HPO term or combination of HPO terms for a specific gene?'),
+        ' Enter your gene and HPO term(s) of interest. '
+        'The frequency of the term (or combination of terms) across patients with this gene defect and '
+        'across all other patients (i.e., with a different gene defect) will be displayed along with the Fisher’s '
+        'exact test derived odds ratio and p-value.'
+    ]),
 ])
 
 

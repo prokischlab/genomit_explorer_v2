@@ -41,16 +41,14 @@ layout = html.Div(children=[
                'ACMG classification, functional evidence, and phenotype semantic similarity score.'),
 
         html.P(html.B(['2) Information on HPO-gene associations, on the ',
-                       html.A('patient-level', href='/patient_level'),
-                       ' (>7,500 patients) and ',
                        html.A('gene-level', href='/gene_level'),
-                       ' (>450 genes).'])),
+                       ' (>450 genes) and ',
+                       html.A('patient-level', href='/patient_level'),
+                       ' (>7,500 patients).'])),
         html.P('HPO-gene association are provided for all patients included in the exome study (>2,000) in addition '
                'to molecularly diagnosed patients from mitochondrial disease registries (mitoNET and Besta, >1,000), '
                'from the Beijing Leigh Group Project (>200), and from literature reports (>4,500). '
                'For mtDNA encoded diagnoses, associations are provided on the variant level.'),
-        html.P('The most discriminating phenotypes by molecular diagnosis can be explored for all genes '
-               'with ≥5 reported patients carrying “pathogenic” and “likely pathogenic” variants.'),
         html.P(['Contact: prokisch@helmholtz-muenchen.de'])
     ], style={"margin-left": "10%", "margin-right": "10%"})
 ])

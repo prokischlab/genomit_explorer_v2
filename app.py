@@ -35,7 +35,7 @@ CONTENT_STYLE = {
 
 sidebar = html.Div(
     [
-        html.H4("GENOMITExplorer"),
+        html.H4("GENOMITexplorer"),
         html.Hr(),
         # html.P(
         #     "A simple sidebar layout with navigation links", className="lead"
