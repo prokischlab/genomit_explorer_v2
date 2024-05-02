@@ -3,7 +3,7 @@ from dash import html, dcc, dash_table, callback, Input, Output
 import pandas as pd
 import json
 
-# dash.register_page(__name__, path='/phenotype_level', order=4)
+dash.register_page(__name__, path='/phenotype_level', order=4)
 
 
 def prepare_df_visualise(df: pd.DataFrame):
@@ -11,10 +11,11 @@ def prepare_df_visualise(df: pd.DataFrame):
     # df_res = df_res[['exome_ID', 'gene_name', 'HPO_ID', 'HPO_term']]
     df_res = df_res[['gene_name', 'number_of_patient']]
     df_res = df_res.reset_index(drop=True)
-    df_res = df_res.reset_index()
-    df_res['index'] += 1
+    # df_res = df_res.reset_index()
+    # df_res['index'] += 1
     # df_res.columns = ['N', 'Patient ID', 'Gene name', 'HPO ID', 'HPO term']
-    df_res.columns = ['N', 'Gene name', 'Number of patients']
+    df_res = df_res.sort_values('number_of_patient', ascending=False)
+    df_res.columns = ['Gene name', 'Number of patients']
     return df_res
 
 

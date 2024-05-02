@@ -39,17 +39,18 @@ def prepare_df_visualise(df: pd.DataFrame):
     df_res = df_res.reset_index()
     df_res['index'] += 1
 
+    # df_res = \
+    #     df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene', 'patients_total', 'odds_ratio', 'p_val']]
     df_res = \
-        df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene', 'patients_total', 'odds_ratio', 'p_val']]
+        df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene', 'odds_ratio', 'p_val']]
     df_res = df_res.sort_values('p_val')
-    df_res = \
-        df_res[['gene_name', 'HPO_ID', 'HPO_term', 'patients_gene']]
 
     # df_res.columns = \
     #     ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term',
     #      'All other patients with this HPO', 'Odds ratio', 'P value']
     df_res.columns = \
-        ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term']
+        ['Gene name', 'HPO ID', 'HPO term', 'Patients with this genetic diagnosis and HPO term',
+         'Odds ratio', 'P value']
     return df_res
 
 
@@ -114,6 +115,8 @@ layout = html.Div(children=[
     html.Br(),
     dash_table.DataTable(visualise_df.to_dict('records'), id='gene-table',
                          page_size=20,
+                         columns=visualise_columns,
+                         sort_action="native", sort_mode="multi",
                          # page_action='none',
                          # virtualization=True,
                          # fixed_rows={'headers': True},
@@ -185,8 +188,9 @@ layout = html.Div(children=[
     Input('gene-dropdown', 'value'),
     Input('hpo-dropdown', 'value'),
     Input('nuclear-mt-radio', 'value'),
+    Input('significant-switch', 'value')
 )
-def filter_table(gene_name, hpos, nuclear_mt):
+def filter_table(gene_name, hpos, nuclear_mt, significant):
     df_res = df_gene_level.copy()
 
     show_combine_hpo = True
@@ -235,6 +239,10 @@ def filter_table(gene_name, hpos, nuclear_mt):
         df_res = df_res[~df_res.gene_name.str.startswith('MT-')]
     elif nuclear_mt == 'mt':
         df_res = df_res[df_res.gene_name.str.startswith('MT-')]
+
+    if significant == 'significant':
+        df_res = df_res[df_res.p_val < 0.05]
+        df_res = df_res[df_res.odds_ratio > 1]
 
     return prepare_df_visualise(df_res).to_dict('records'), gene_name, hpos_show, \
         patients_gene_combine, other_patients_combine, fisher_result, \

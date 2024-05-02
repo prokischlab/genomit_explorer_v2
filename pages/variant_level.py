@@ -47,7 +47,8 @@ layout = html.Div(children=[
         # ], style={"width": "50%", 'display': 'inline-block', "margin-left": "15px"}),
     ]),
     html.Br(),
-    dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='variant-table', page_size=20),
+    dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='variant-table', page_size=20,
+                         sort_action="native", sort_mode="multi",),
     html.Br(),
     html.Ul([
         html.Li([

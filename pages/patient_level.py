@@ -51,6 +51,7 @@ layout = html.Div(children=[
     html.Br(),
     dash_table.DataTable(prepare_df_visualise(df_all).to_dict('records'), id='patient-table',
                          page_size=20,
+                         sort_action="native", sort_mode="multi",
                          # page_action='none',
                          # virtualization=True,
                          # fixed_rows={'headers': True},
